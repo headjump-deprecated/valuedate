@@ -25,6 +25,11 @@ h2. Sample
 		role: "user",
 		age: 23
 	};
+	var mother:Object = {
+		name: "Your Mother",
+		role: "mother",
+		age: 88
+	};
 	var schema:Assure = Assure.value.forProperties( {
 		name: 	Assure.value.isA(String),
 		role: 	Assure.value.equalsOneOf("admin","user"),
@@ -34,7 +39,8 @@ h2. Sample
 		})
 	});
 	schema.validate(admin);  // => true
-	schema.validate(user);   // => false
+	schema.validate(user);   // => true
+	schema.validate(mother); // => false
 </pre>
 
 h3. More coming soon...
