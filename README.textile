@@ -35,7 +35,7 @@ h2. Sample
 	schema.validate(mother); // => false
 </pre>
 
-h3. Template for your own @Assure@s:
+h3. Template for your own Assures:
 
 Add a function in _Assure.as_ to the @Assure@ class, following this template:
 
