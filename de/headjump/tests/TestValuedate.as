@@ -211,5 +211,14 @@
 			assertFalse(schema.validate(o2));
 		}
 		
-	}	
+		public function testNot():void {
+			assertTrue(Assure.v.not(Assure.v.isA(Number)).validate("I'm a string"));
+			
+			var noone_special:Assure = Assure.v.not(Assure.v.equalsOneOf("admin", "user", "boss"));
+			assertTrue(noone_special.validate("myself"));
+			assertTrue(noone_special.validate("your mother"));
+			assertFalse(noone_special.validate("boss"));
+		}
+		
+	}
 }

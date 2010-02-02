@@ -45,10 +45,6 @@
 			});
 		}
 		
-		public function isAn(c:Class):Assure {
-			return check(value.isA(c).assure_function);
-		}
-		
 		public function equalsOneOf(...params):Assure {
 			// value equals ONE of params
 			return check(function(value:*) {
@@ -76,6 +72,12 @@
 			// queue in a predefined assure e.g 
 			// 		Assure.value.isA(Number).assures(my_predefined_assure).validate(10);
 			return check(predefined_assure.assure_function);
+		}
+		
+		public function not(a:Assure):Assure {
+			return check(function(value:*) {
+				if(a.validate(value)) throw new Error("!not " + value + " - " + a);
+			});
 		}
 		
 		public function inRange(min:Number, max:Number):Assure {
