@@ -168,5 +168,48 @@
 			val.validate(user2);
 		}
 		
+		public function testForEach():void {
+			var schema:Assure = Assure.value.forEach(Assure.value.isA(Number).inRange(1, 15));
+			
+			var a1:Array = [1, 2, 3, 4, 5, 6];	// ok
+			var a2:Array = [1, 2, 20];			// fails
+			var a3:Array = [1, 2, "test"];		// fails
+			
+			assertTrue(schema.validate(a1));
+			assertFalse(schema.validate(a2));
+			assertFalse(schema.validate(a3));
+		}
+		
+		public function testForEachWithProperties():void {
+			var o1:Object = {
+				"val1" : {
+					"name" : "Name 1",
+					"age" : 99
+				},
+				"val2" : {
+					"name" : "Name 2",
+					"age" : 99
+				}
+			}
+			var o2:Object = {
+				"val1" : {
+					"name" : "Name 1",
+					"age" : 99
+				},
+				"val2" : {
+					"name" : "Name 2",
+					"age" : "very old"
+				}
+			}
+			
+			var schema:Assure = Assure.value.forEach(Assure.value.forProperties( {
+				"name" : Assure.value.isA(String),
+				"age" : Assure.value.isA(Number)
+			}));
+			
+			assertTrue(schema.validate(o1));
+			assertFalse(schema.validate(o2));
+		}
+		
 	}	
 }

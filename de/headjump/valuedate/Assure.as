@@ -37,6 +37,14 @@
 			});
 		}
 		
+		public function forEach(a:Assure):Assure {
+			return check(function(value:*) {
+				for each (var c:* in value) {
+					if (!a.validate(c)) throw new Error("!forEach " + [value, c, a]);
+				}
+			});
+		}
+		
 		public function isAn(c:Class):Assure {
 			return check(value.isA(c).assure_function);
 		}
