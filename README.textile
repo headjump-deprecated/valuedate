@@ -1,7 +1,6 @@
 h1. Valuedate
 
 | Description | Validates values using a schema. |
-| Language | @Actionscript 3@ |
 | Source | "http://github.com/headjump/valuedate":http://github.com/headjump/valuedate |
 
 h2. Sample
@@ -11,29 +10,22 @@ h2. Sample
 // chained validation
 	Assure.value.isA(Number).inRange(10, 20).validate(15); // => true
 
-// validating Object properties
+// validating Object properties (with optional properties)
 	var admin:Object = {
-		name: "Mr. Admin",
 		role: "admin",
-		age: 29,
 		info: {
-			title: "hello world"
+			title: "I'm admin"
 		}
 	};	
 	var user:Object = {
-		name: "Username",
 		role: "user",
-		age: 23
 	};
 	var mother:Object = {
-		name: "Your Mother",
-		role: "mother",
+		role: "your mother",
 		age: 88
 	};
 	var schema:Assure = Assure.value.forProperties( {
-		name: 	Assure.value.isA(String),
 		role: 	Assure.value.equalsOneOf("admin","user"),
-		age: 	Assure.value.isA(Number).inRange(0, 99),
 		info: 	Assure.optional_value.forProperties( {
 			title: Assure.value.isA(String)
 		})
@@ -43,4 +35,28 @@ h2. Sample
 	schema.validate(mother); // => false
 </pre>
 
-h3. More coming soon...
+h3. Template for your own @Assure@s:
+
+Add a function in _Assure.as_ to the @Assure@ class, following this template:
+
+*Template*
+<pre>
+public function myFunction(my_params):Assure {
+	return check(function(value:*) {
+		// @value is the value to check your constraints for
+		// 		if @value matches: 	do nothing
+		// 		otherwise: 			throw an Error!
+	});
+}
+</pre>
+
+The @validate(...)@ function catches your errors. If there are any, it returns @false@, otherwise @true@.
+
+*Example*
+<pre>
+public function isA(c:Class):Assure {
+	return check(function(value:*) {
+		if (!(value is c)) throw new Error("!ofClass " + [value, c]);
+	});
+}
+</pre>
