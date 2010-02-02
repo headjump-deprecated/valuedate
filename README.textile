@@ -43,14 +43,16 @@ Add a function in _Assure.as_ to the @Assure@ class, following this template:
 <pre>
 	public function myFunction(my_params):Assure {
 		return check(function(value:*) {
-			// @value is the value to check your constraints for
-			// 		if @value matches: 	do nothing
-			// 		otherwise: 			throw an Error!
+			// here goes your code!
+			// @value is the value to validate
+			//	if @value matches your constraints: do nothing
+			// 	otherwise: throw an Error!
 		});
 	}
 </pre>
 
-The @validate(...)@ function catches your errors. If there are any, it returns @false@, otherwise @true@.
+The @validate(...)@ function you call to validate a value catches your errors. If there are any, it returns @false@, otherwise @true@.
+So all you have to do is throw an @Error@ if your constraints are violated.
 
 *Example*
 
