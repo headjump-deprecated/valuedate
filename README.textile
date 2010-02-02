@@ -6,7 +6,6 @@ h1. Valuedate
 h2. Sample
 
 <pre>
-
 // chained validation
 	Assure.value.isA(Number).inRange(10, 20).validate(15); // => true
 
@@ -40,23 +39,25 @@ h3. Template for your own Assures:
 Add a function in _Assure.as_ to the @Assure@ class, following this template:
 
 *Template*
+
 <pre>
-public function myFunction(my_params):Assure {
-	return check(function(value:*) {
-		// @value is the value to check your constraints for
-		// 		if @value matches: 	do nothing
-		// 		otherwise: 			throw an Error!
-	});
-}
+	public function myFunction(my_params):Assure {
+		return check(function(value:*) {
+			// @value is the value to check your constraints for
+			// 		if @value matches: 	do nothing
+			// 		otherwise: 			throw an Error!
+		});
+	}
 </pre>
 
 The @validate(...)@ function catches your errors. If there are any, it returns @false@, otherwise @true@.
 
 *Example*
+
 <pre>
-public function isA(c:Class):Assure {
-	return check(function(value:*) {
-		if (!(value is c)) throw new Error("!ofClass " + [value, c]);
-	});
-}
+	public function isA(c:Class):Assure {
+		return check(function(value:*) {
+			if (!(value is c)) throw new Error("!ofClass " + [value, c]);
+		});
+	}
 </pre>
