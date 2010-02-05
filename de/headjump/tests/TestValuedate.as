@@ -220,5 +220,16 @@
 			assertFalse(noone_special.validate("boss"));
 		}
 		
+		public function testNotNull():void {
+			assertTrue(Assure.v.notNull().validate(1));
+			assertTrue(Assure.v.notNull().validate("hello"));
+			assertFalse(Assure.v.notNull().validate(null));
+			assertFalse(Assure.v.notNull().validate(undefined));
+			var o:Object;
+			assertFalse(Assure.v.notNull().validate(o));
+			assertTrue(Assure.v.forProperties( { "test" : Assure.v.notNull() } ).validate( { "test" : [] } ));
+			assertFalse(Assure.v.forProperties( { "test" : Assure.v.notNull() } ).validate( { "test2" : "hallo" } ));
+		}
+		
 	}
 }

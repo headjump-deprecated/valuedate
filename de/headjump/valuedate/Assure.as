@@ -55,6 +55,15 @@
 			});
 		}
 		
+		/**
+		 * assures value neither null nor undefined
+		 */
+		public function notNull():Assure {
+			return check(function(value:*) {
+				if (value == null || value == undefined) throw new Error("!NotNull -> " + value);
+			});
+		}
+		
 		public function oneOf(... assures):Assure {
 			return check(function(value:*) {
 				for each(var a:Assure in assures) {
