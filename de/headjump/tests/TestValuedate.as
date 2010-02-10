@@ -231,5 +231,22 @@
 			assertFalse(Assure.v.forProperties( { "test" : Assure.v.notNull() } ).validate( { "test2" : "hallo" } ));
 		}
 		
+		public function testAsInt():void {
+			assertTrue(Assure.v.asInt().isA(Number).equals(123).validate("123"));
+			assertFalse(Assure.v.asInt().validate("not a number"));
+		}
+		
+		public function testAsFloat():void {
+			assertTrue(Assure.v.asFloat().isA(Number).equals(123.45).validate("123.45"));
+			assertFalse(Assure.v.asFloat().validate("not a number"));
+		}
+		
+		public function testAsString():void {
+			assertTrue(Assure.v.asString().isA(String).equals("123.45").validate(123.45));
+		}
+		
+		public function testAsSelf():void {
+			assertTrue(Assure.v.asInt().asSelf().equals("123").validate("123"));
+		}
 	}
 }
