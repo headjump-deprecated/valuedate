@@ -1,4 +1,4 @@
-﻿package de.headjump.valuedate {
+package de.headjump.valuedate {
 	
 	public class Assure {
 		private var _func:Function;

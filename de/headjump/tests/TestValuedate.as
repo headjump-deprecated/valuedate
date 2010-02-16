@@ -1,4 +1,4 @@
-﻿package de.headjump.tests {
+package de.headjump.tests {
 	import asunit.framework.TestCase;	
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
