@@ -248,5 +248,16 @@ package de.headjump.tests {
 		public function testAsSelf():void {
 			assertTrue(Assure.v.asInt().asSelf().equals("123").validate("123"));
 		}
+		
+		public function testTrueFor():void {
+			var length3:Function = function(value:*):Boolean {
+				if (value is Array && (value as Array).length === 3) return true;
+				return false;
+			}
+			
+			assertTrue(Assure.v.trueFor(length3).validate([1, 2, 3]));
+			assertFalse(Assure.v.trueFor(length3).validate([1, 2]));
+			assertFalse(Assure.v.trueFor(length3).validate("Hello"));
+		}
 	}
 }

@@ -111,6 +111,12 @@ package de.headjump.valuedate {
 			});
 		}
 		
+		public function trueFor(func:Function):Assure {
+			return check(function(value:*):void {
+				if (!func.apply(null, [value])) throw new Error("!trueFor " + func);
+			});
+		}
+		
 		public function notEquals(val:*):Assure {
 			return check(Assure.v.notEqualsOneOf(val).assure_function);
 		}
