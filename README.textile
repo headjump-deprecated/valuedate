@@ -1,15 +1,19 @@
 h1. Valuedate
 
 | Description | Validates values using a schema. |
+| Language | @Actionscript 3@ |
 | Source | "http://github.com/headjump/valuedate":http://github.com/headjump/valuedate |
 
 h2. Sample
 
 <pre>
 // chained validation
-	Assure.value.isA(Number).inRange(10, 20).validate(15); // => true
+	var my_value:int = 15;
+	Assure.value.isA(Number).inRange(10, 20).validate(my_value); // => true
 
-// validating Object properties (with optional properties)
+// validating Object structure (with optional properties)
+
+	// Test objects
 	var admin:Object = {
 		role: "admin",
 		info: {
@@ -17,18 +21,22 @@ h2. Sample
 		}
 	};	
 	var user:Object = {
-		role: "user",
+		role: "user"
 	};
 	var mother:Object = {
 		role: "your mother",
 		age: 88
 	};
+
+	// Validation schema
 	var schema:Assure = Assure.value.forProperties( {
 		role: 	Assure.value.equalsOneOf("admin","user"),
 		info: 	Assure.optional_value.forProperties( {
 			title: Assure.value.isA(String)
 		})
 	});
+
+	// Validating...
 	schema.validate(admin);  // => true
 	schema.validate(user);   // => true
 	schema.validate(mother); // => false
