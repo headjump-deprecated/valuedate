@@ -259,5 +259,42 @@ package de.headjump.tests {
 			assertFalse(Assure.v.trueFor(length3).validate([1, 2]));
 			assertFalse(Assure.v.trueFor(length3).validate("Hello"));
 		}
+		
+		public function testDeepOK():void {
+			var o:Object = {
+				"1": {
+					"2": 3
+				},
+				"2": [0, 0, 0, [0, 0, 0, 0, "test"]]
+			}
+			assertTrue(Assure.v.deep(["1", "2"], Assure.v.isA(Number).equals(3)).validate(o));
+			assertTrue(Assure.v.deep(["2", 3, 4], Assure.v.isA(String).equals("test")).validate(o));
+			assertTrue(Assure.v.deep([], Assure.v.equals(2)).validate(2));
+			assertTrue(Assure.v.deep([], Assure.v.notNull()).validate("test"));
+		}
+		
+		public function testDeepError():void {
+			var o:Object = {
+				"1": {
+					"2": 3
+				},
+				"2": [0, 0, 0, [0, 0, 0, 0, "test"]]
+			}
+			assertFalse(Assure.v.deep([3, 5], Assure.v.notNull()).validate(o));
+			assertFalse(Assure.v.deep([3, 5], Assure.v.notNull()).validate( { } ));
+		}
+		
+		public function testDeepOptional():void {
+			var o:Object = {
+				"1": {
+					"2": 3
+				},
+				"2": [0, 0, 0, [0, 0, 0, 0, "test"]]
+			}
+			assertTrue(Assure.v.deep([3, 5], Assure.optional.notNull()).validate(o)); // optional
+			assertTrue(Assure.v.deep([], Assure.optional.notNull()).validate(null)); // optional
+			assertTrue(Assure.optional.deep([], Assure.v.notNull()).validate(null)); // optional
+		}
+		
 	}
 }

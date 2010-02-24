@@ -1,4 +1,5 @@
 package de.headjump.valuedate {
+	import de.headjump.tests.TestValuedate;
 	
 	public class Assure {
 		private var _func:Function;
@@ -163,6 +164,31 @@ package de.headjump.valuedate {
 				for (var key:* in schema) {
 					if (!Assure(schema[key]).validate(value[key])) throw new Error("!schema " + [value, value[key], schema[key]]);
 				}
+			});
+		}
+		
+		public function deep(path_to_value:Array, assure:Assure):Assure {
+			return check(function(value:*):void {
+				var v:*;
+				if (path_to_value.length === 0) {
+					v = value;
+				} else {
+					var p:* = value;
+					while (path_to_value.length > 0) {
+						try {
+							if (path_to_value.length > 1) {
+								p = p[path_to_value[0]];
+							} else {
+								v = p[path_to_value[0]];
+							}
+							path_to_value.shift();
+						} catch (e:Error) {
+							v = undefined;
+							break;
+						}
+					}
+				}
+				if(!assure.validate(v)) throw Error("!deep assure for " + v);
 			});
 		}
 		
