@@ -296,5 +296,15 @@ package de.headjump.tests {
 			assertTrue(Assure.optional.deep([], Assure.v.notNull()).validate(null)); // optional
 		}
 		
+		public function testDeepUndefined():void {
+			var o:Object = {
+				"test": { },
+				"test2": []
+			}
+			assertTrue(Assure.v.deep(["test"], Assure.v.notNull()).validate(o));
+			assertTrue(Assure.v.deep(["test2"], Assure.v.notNull()).validate(o));
+			assertFalse(Assure.v.deep(["not_there"], Assure.v.notNull()).validate(o));
+		}
+		
 	}
 }
