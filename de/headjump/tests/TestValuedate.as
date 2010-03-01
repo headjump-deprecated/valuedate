@@ -271,6 +271,7 @@ package de.headjump.tests {
 			assertTrue(Assure.v.deep(["2", 3, 4], Assure.v.isA(String).equals("test")).validate(o));
 			assertTrue(Assure.v.deep([], Assure.v.equals(2)).validate(2));
 			assertTrue(Assure.v.deep([], Assure.v.notNull()).validate("test"));
+			assertFalse(Assure.v.deep(["update"], Assure.v.notNull()).validate( {} ));
 		}
 		
 		public function testDeepError():void {
@@ -298,13 +299,20 @@ package de.headjump.tests {
 		
 		public function testDeepUndefined():void {
 			var o:Object = {
-				"test": { },
-				"test2": []
+				"test": "test",
+				"test2": {}
 			}
 			assertTrue(Assure.v.deep(["test"], Assure.v.notNull()).validate(o));
 			assertTrue(Assure.v.deep(["test2"], Assure.v.notNull()).validate(o));
-			assertFalse(Assure.v.deep(["not_there"], Assure.v.notNull()).validate(o));
+			assertFalse(Assure.v.deep(["update"], Assure.v.notNull()).validate(o));
 		}
 		
+		public function testDeepUndefinedSaved():void {
+			var a:Assure = Assure.v.deep(["update"], Assure.v.notNull());
+			assertTrue(a.validate( { "update": [1,2,3] } ));
+			assertTrue(a.validate( { "update": 123 } ));
+			assertFalse(a.validate( {} ));
+			assertFalse(a.validate( undefined ));
+		}
 	}
 }

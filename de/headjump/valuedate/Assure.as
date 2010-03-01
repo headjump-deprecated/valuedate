@@ -169,20 +169,25 @@ package de.headjump.valuedate {
 		}
 		
 		public function deep(path_to_value:Array, assure:Assure):Assure {
+			trace("  deep " + path_to_value + " - " + assure);
 			return check(function(value:*):void {
 				var v:*;
-				if (path_to_value.length === 0) {
+				var arraycopy:Array = [];
+				for (var i:int = 0; i < path_to_value.length; i++) {
+					arraycopy.push(path_to_value[i]);
+				}
+				if (arraycopy.length === 0) {
 					v = value;
 				} else {
 					var p:* = value;
-					while (path_to_value.length > 0) {
+					while (arraycopy.length > 0) {
 						try {
-							if (path_to_value.length > 1) {
-								p = p[path_to_value[0]];
+							if (arraycopy.length > 1) {
+								p = p[arraycopy[0]];
 							} else {
-								v = p[path_to_value[0]];
+								v = p[arraycopy[0]];
 							}
-							path_to_value.shift();
+							arraycopy.shift();
 						} catch (e:Error) {
 							v = undefined;
 							break;
