@@ -2,7 +2,7 @@ package de.headjump.valuedate {
 	import de.headjump.tests.TestValuedate;
 	
 	public class Assure {
-		public static const VERSION:Number = 0.9;
+		public static const VERSION:Number = 0.91;
 		private var _func:Function;
 		private var _is_optional:Boolean;
 		private var _prepare_value:Function;
