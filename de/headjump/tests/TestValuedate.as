@@ -10,61 +10,74 @@ package de.headjump.tests {
 	*/
 	
 	public class TestValuedate extends TestCase {
+		public static const REPEAT_EACH:int = 3; // to make sure the assure function is repeatable! important!
 
 		public function TestValuedate(testMethod:String = null) {
 			super(testMethod);
 		}
 		
+		private function validates(assure:Assure, ... values):void {
+			for (var i:int = 0; i < REPEAT_EACH; i++) {
+				assertTrue(assure.validate.apply(null, values));
+			}
+		}
+		
+		private function fails(assure:Assure, ... values):void {
+			for (var i:int = 0; i < REPEAT_EACH; i++) {
+				assertFalse(assure.validate.apply(null, values));
+			}
+		}
+		
 		public function testIsA():void {
-			assertTrue(Assure.value.isA(Number).validate(12));
-			assertFalse(Assure.value.isA(Number).validate({}));
+			validates(Assure.value.isA(Number),12);
+			fails(Assure.value.isA(Number),{});
 		}
 		
 		public function testChainedAssertion():void {
-			assertTrue(Assure.value.isA(Number).inRange(10, 15).equals(12).validate(12));
-			assertFalse(Assure.value.isA(Number).inRange(10, 15).equals(12).validate("test"));
+			validates(Assure.value.isA(Number).inRange(10, 15).equals(12), 12);
+			fails(Assure.value.isA(Number).inRange(10, 15).equals(12), "test");
 		}
 		
 		public function testOneOf():void {
-			assertTrue(Assure.value.oneOf(Assure.value.isA(Number), Assure.value.isA(String)).validate(12));
-			assertTrue(Assure.value.oneOf(Assure.value.isA(Number), Assure.value.isA(String)).validate("hello"));
-			assertFalse(Assure.value.oneOf(Assure.value.isA(Number), Assure.value.isA(String)).validate({ name: "klaus"}));
+			validates(Assure.value.oneOf(Assure.value.isA(Number), Assure.value.isA(String)),12);
+			validates(Assure.value.oneOf(Assure.value.isA(Number), Assure.value.isA(String)),"hello");
+			fails(Assure.value.oneOf(Assure.value.isA(Number), Assure.value.isA(String)),{ name: "klaus"});
 		}
 		
 		public function testValidates():void {
-			assertTrue(Assure.value.oneOf(Assure.value.isA(Number), Assure.value.isA(String)).validate(12, "test"));
-			assertFalse(Assure.value.oneOf(Assure.value.isA(Number), Assure.value.isA(String)).validate(12, {}));
+			validates(Assure.value.oneOf(Assure.value.isA(Number), Assure.value.isA(String)), 12, "test");
+			fails(Assure.value.oneOf(Assure.value.isA(Number), Assure.value.isA(String)), 12, {});
 		}
 		
 		public function testNotEquals():void {
-			assertTrue(Assure.value.notEquals(12).validate(13, 14, 15, 16));
-			assertTrue(Assure.value.notEqualsOneOf(12, 13, 14).validate(15, 16, 17));
-			assertFalse(Assure.value.notEquals(12).validate(12, 14, 15, 16));
-			assertFalse(Assure.value.notEqualsOneOf(12, 13, 14).validate(14));
+			validates(Assure.value.notEquals(12), 13, 14, 15, 16);
+			validates(Assure.value.notEqualsOneOf(12, 13, 14), 15, 16, 17);
+			fails(Assure.value.notEquals(12), 12, 14, 15, 16);
+			fails(Assure.value.notEqualsOneOf(12, 13, 14), 14);
 		}
 		
 		public function testPredefinedAssure():void {
 			var func:Assure = Assure.value.oneOf(Assure.value.inRange(10, 20), Assure.value.isA(String));
-			assertTrue(Assure.value.assures(func).validate("hello"));
-			assertTrue(Assure.value.assures(func).validate(15));
-			assertFalse(Assure.value.assures(func).validate({}));
-			assertFalse(Assure.value.assures(func).validate(21));
+			validates(Assure.value.assures(func), "hello");
+			validates(Assure.value.assures(func), 15);
+			fails(Assure.value.assures(func), {});
+			fails(Assure.value.assures(func), 21);
 		}
 		
 		public function testEquals():void {
-			assertTrue(Assure.value.equals(12).validate(12));
-			assertTrue(Assure.value.equalsOneOf("admin", "user").validate("admin"));
-			assertFalse(Assure.value.equals(12).validate(14));
-			assertFalse(Assure.value.equalsOneOf("admin", "user").validate("mother"));
+			validates(Assure.value.equals(12), 12);
+			validates(Assure.value.equalsOneOf("admin", "user"), "admin");
+			fails(Assure.value.equals(12), 14);
+			fails(Assure.value.equalsOneOf("admin", "user"), "mother");
 		}
 		
 		public function testNotEmpty():void {
-			assertTrue(Assure.value.notEmpty().validate("hello", [1], 12, new Sprite(), { "test": "1"}));
-			assertFalse(Assure.value.notEmpty().validate([]));
-			assertFalse(Assure.value.notEmpty().validate(""));
-			assertFalse(Assure.value.notEmpty().validate(NaN));
-			assertFalse(Assure.value.notEmpty().validate(undefined));
-			assertFalse(Assure.value.notEmpty().validate(null));
+			validates(Assure.value.notEmpty(), "hello", [1], 12, new Sprite(), { "test": "1"});
+			fails(Assure.value.notEmpty(), []);
+			fails(Assure.value.notEmpty(), "");
+			fails(Assure.value.notEmpty(), NaN);
+			fails(Assure.value.notEmpty(), undefined);
+			fails(Assure.value.notEmpty(), null);
 		}
 		
 		public function testProperties():void {
@@ -88,9 +101,9 @@ package de.headjump.tests {
 				role: Assure.value.equalsOneOf("admin", "user"),
 				age: Assure.value.isA(Number).inRange(5, 99)
 			}) 
-			assertTrue(Assure.value.assures(val).validate(admin));
-			assertTrue(Assure.value.assures(val).validate(user));
-			assertFalse(Assure.value.assures(val).validate(mother));
+			validates(Assure.value.assures(val), admin);
+			validates(Assure.value.assures(val), user);
+			fails(Assure.value.assures(val), mother);
 		}
 		
 		public function testNested():void {
@@ -123,14 +136,14 @@ package de.headjump.tests {
 					title: Assure.value.isA(String)
 				}))
 			}) 
-			assertTrue(Assure.value.assures(val).validate(admin));
-			assertTrue(Assure.value.assures(val).validate(user));
-			assertFalse(Assure.value.assures(val).validate(user2));
+			validates(Assure.value.assures(val), admin);
+			validates(Assure.value.assures(val), user);
+			fails(Assure.value.assures(val), user2);
 		}
 		
 		public function testV():void {
 			// short writing
-			assertTrue(Assure.v.equals(12).validate(12));
+			validates(Assure.v.equals(12), 12);
 		}
 		
 		public function testOptionalValue():void {
@@ -175,9 +188,9 @@ package de.headjump.tests {
 			var a2:Array = [1, 2, 20];			// fails
 			var a3:Array = [1, 2, "test"];		// fails
 			
-			assertTrue(schema.validate(a1));
-			assertFalse(schema.validate(a2));
-			assertFalse(schema.validate(a3));
+			validates(schema, a1);
+			fails(schema, a2);
+			fails(schema, a3);
 		}
 		
 		public function testForEachWithProperties():void {
@@ -207,46 +220,46 @@ package de.headjump.tests {
 				"age" : Assure.value.isA(Number)
 			}));
 			
-			assertTrue(schema.validate(o1));
-			assertFalse(schema.validate(o2));
+			validates(schema, o1);
+			fails(schema, o2);
 		}
 		
 		public function testNot():void {
-			assertTrue(Assure.v.not(Assure.v.isA(Number)).validate("I'm a string"));
+			validates(Assure.v.not(Assure.v.isA(Number)), "I'm a string");
 			
 			var noone_special:Assure = Assure.v.not(Assure.v.equalsOneOf("admin", "user", "boss"));
-			assertTrue(noone_special.validate("myself"));
-			assertTrue(noone_special.validate("your mother"));
-			assertFalse(noone_special.validate("boss"));
+			validates(noone_special, "myself");
+			validates(noone_special, "your mother");
+			fails(noone_special, "boss");
 		}
 		
 		public function testNotNull():void {
-			assertTrue(Assure.v.notNull().validate(1));
-			assertTrue(Assure.v.notNull().validate("hello"));
-			assertFalse(Assure.v.notNull().validate(null));
-			assertFalse(Assure.v.notNull().validate(undefined));
+			validates(Assure.v.notNull(), 1);
+			validates(Assure.v.notNull(), "hello");
+			fails(Assure.v.notNull(), null);
+			fails(Assure.v.notNull(), undefined);
 			var o:Object;
-			assertFalse(Assure.v.notNull().validate(o));
-			assertTrue(Assure.v.forProperties( { "test" : Assure.v.notNull() } ).validate( { "test" : [] } ));
-			assertFalse(Assure.v.forProperties( { "test" : Assure.v.notNull() } ).validate( { "test2" : "hallo" } ));
+			fails(Assure.v.notNull(), o);
+			validates(Assure.v.forProperties( { "test" : Assure.v.notNull() } ), { "test" : [] } );
+			fails(Assure.v.forProperties( { "test" : Assure.v.notNull() } ), { "test2" : "hallo" } );
 		}
 		
 		public function testAsInt():void {
-			assertTrue(Assure.v.asInt().isA(Number).equals(123).validate("123"));
-			assertFalse(Assure.v.asInt().validate("not a number"));
+			validates(Assure.v.asInt().isA(Number).equals(123), "123");
+			fails(Assure.v.asInt(), "not a number");
 		}
 		
 		public function testAsFloat():void {
-			assertTrue(Assure.v.asFloat().isA(Number).equals(123.45).validate("123.45"));
-			assertFalse(Assure.v.asFloat().validate("not a number"));
+			validates(Assure.v.asFloat().isA(Number).equals(123.45), "123.45");
+			fails(Assure.v.asFloat(), "not a number");
 		}
 		
 		public function testAsString():void {
-			assertTrue(Assure.v.asString().isA(String).equals("123.45").validate(123.45));
+			validates(Assure.v.asString().isA(String).equals("123.45"), 123.45);
 		}
 		
 		public function testAsSelf():void {
-			assertTrue(Assure.v.asInt().asSelf().equals("123").validate("123"));
+			validates(Assure.v.asInt().asSelf().equals("123"), "123");
 		}
 		
 		public function testTrueFor():void {
@@ -255,9 +268,9 @@ package de.headjump.tests {
 				return false;
 			}
 			
-			assertTrue(Assure.v.trueFor(length3).validate([1, 2, 3]));
-			assertFalse(Assure.v.trueFor(length3).validate([1, 2]));
-			assertFalse(Assure.v.trueFor(length3).validate("Hello"));
+			validates(Assure.v.trueFor(length3), [1, 2, 3]);
+			fails(Assure.v.trueFor(length3), [1, 2]);
+			fails(Assure.v.trueFor(length3), "Hello");
 		}
 		
 		public function testDeepOK():void {
@@ -267,11 +280,11 @@ package de.headjump.tests {
 				},
 				"2": [0, 0, 0, [0, 0, 0, 0, "test"]]
 			}
-			assertTrue(Assure.v.deep(["1", "2"], Assure.v.isA(Number).equals(3)).validate(o));
-			assertTrue(Assure.v.deep(["2", 3, 4], Assure.v.isA(String).equals("test")).validate(o));
-			assertTrue(Assure.v.deep([], Assure.v.equals(2)).validate(2));
-			assertTrue(Assure.v.deep([], Assure.v.notNull()).validate("test"));
-			assertFalse(Assure.v.deep(["update"], Assure.v.notNull()).validate( {} ));
+			validates(Assure.v.deep(["1", "2"], Assure.v.isA(Number).equals(3)), o);
+			validates(Assure.v.deep(["2", 3, 4], Assure.v.isA(String).equals("test")), o);
+			validates(Assure.v.deep([], Assure.v.equals(2)), 2);
+			validates(Assure.v.deep([], Assure.v.notNull()), "test");
+			fails(Assure.v.deep(["update"], Assure.v.notNull()), {} );
 		}
 		
 		public function testDeepError():void {
@@ -281,8 +294,8 @@ package de.headjump.tests {
 				},
 				"2": [0, 0, 0, [0, 0, 0, 0, "test"]]
 			}
-			assertFalse(Assure.v.deep([3, 5], Assure.v.notNull()).validate(o));
-			assertFalse(Assure.v.deep([3, 5], Assure.v.notNull()).validate( { } ));
+			fails(Assure.v.deep([3, 5], Assure.v.notNull()), o);
+			fails(Assure.v.deep([3, 5], Assure.v.notNull()), { } );
 		}
 		
 		public function testDeepOptional():void {
@@ -292,9 +305,9 @@ package de.headjump.tests {
 				},
 				"2": [0, 0, 0, [0, 0, 0, 0, "test"]]
 			}
-			assertTrue(Assure.v.deep([3, 5], Assure.optional.notNull()).validate(o)); // optional
-			assertTrue(Assure.v.deep([], Assure.optional.notNull()).validate(null)); // optional
-			assertTrue(Assure.optional.deep([], Assure.v.notNull()).validate(null)); // optional
+			validates(Assure.v.deep([3, 5], Assure.optional.notNull()), o); // optional
+			validates(Assure.v.deep([], Assure.optional.notNull()), null); // optional
+			validates(Assure.optional.deep([], Assure.v.notNull()), null); // optional
 		}
 		
 		public function testDeepUndefined():void {
@@ -302,17 +315,17 @@ package de.headjump.tests {
 				"test": "test",
 				"test2": {}
 			}
-			assertTrue(Assure.v.deep(["test"], Assure.v.notNull()).validate(o));
-			assertTrue(Assure.v.deep(["test2"], Assure.v.notNull()).validate(o));
-			assertFalse(Assure.v.deep(["update"], Assure.v.notNull()).validate(o));
+			validates(Assure.v.deep(["test"], Assure.v.notNull()), o);
+			validates(Assure.v.deep(["test2"], Assure.v.notNull()), o);
+			fails(Assure.v.deep(["update"], Assure.v.notNull()), o);
 		}
 		
 		public function testDeepUndefinedSaved():void {
 			var a:Assure = Assure.v.deep(["update"], Assure.v.notNull());
-			assertTrue(a.validate( { "update": [1,2,3] } ));
-			assertTrue(a.validate( { "update": 123 } ));
-			assertFalse(a.validate( {} ));
-			assertFalse(a.validate( undefined ));
+			validates(a, { "update": [1,2,3] } );
+			validates(a, { "update": 123 } );
+			fails(a, {} );
+			fails(a, undefined );
 		}
 	}
 }

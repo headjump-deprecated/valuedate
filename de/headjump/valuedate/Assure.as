@@ -169,7 +169,6 @@ package de.headjump.valuedate {
 		}
 		
 		public function deep(path_to_value:Array, assure:Assure):Assure {
-			trace("  deep " + path_to_value + " - " + assure);
 			return check(function(value:*):void {
 				var v:*;
 				var arraycopy:Array = [];
