@@ -285,6 +285,11 @@ package de.headjump.tests {
 			validates(Assure.v.deep([], Assure.v.equals(2)), 2);
 			validates(Assure.v.deep([], Assure.v.notNull()), "test");
 			fails(Assure.v.deep(["update"], Assure.v.notNull()), {} );
+			validates(Assure.v.deep("1.2", Assure.v.isA(Number).equals(3)), o);
+			validates(Assure.v.deep("2.3.4", Assure.v.isA(String).equals("test")), o);
+			validates(Assure.v.deep("", Assure.v.equals(2)), 2);
+			validates(Assure.v.deep("", Assure.v.notNull()), "test");
+			fails(Assure.v.deep("update", Assure.v.notNull()), {} );
 		}
 		
 		public function testDeepError():void {
@@ -296,6 +301,8 @@ package de.headjump.tests {
 			}
 			fails(Assure.v.deep([3, 5], Assure.v.notNull()), o);
 			fails(Assure.v.deep([3, 5], Assure.v.notNull()), { } );
+			fails(Assure.v.deep("3.5", Assure.v.notNull()), o);
+			fails(Assure.v.deep("3.5", Assure.v.notNull()), { } );
 		}
 		
 		public function testDeepOptional():void {

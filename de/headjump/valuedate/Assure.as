@@ -168,12 +168,25 @@ package de.headjump.valuedate {
 			});
 		}
 		
-		public function deep(path_to_value:Array, assure:Assure):Assure {
+		/**
+		 * Validates a single value "deep" inside the objects structure
+		 * @param	path_to_value	Array ["parent","child","child"] || String "parent.child.child" (String will be split by ".")
+		 * @param	assure		Assure to validate deep value with
+		 */public function deep(path_to_value:*, assure:Assure):Assure {
 			return check(function(value:*):void {
 				var v:*;
 				var arraycopy:Array = [];
-				for (var i:int = 0; i < path_to_value.length; i++) {
-					arraycopy.push(path_to_value[i]);
+				var a:Array;
+				if (path_to_value is Array) {
+					a = path_to_value as Array;
+				} else if (path_to_value is String) {
+					var str_p:String = path_to_value as String;
+					a = str_p.length > 0 ? str_p.split(".") : [];
+				} else {
+					throw new Error("Assure.deep wrong path format (should be String || Array): " + path_to_value);
+				}
+				for (var i:int = 0; i < a.length; i++) {
+					arraycopy.push(a[i]);
 				}
 				if (arraycopy.length === 0) {
 					v = value;
