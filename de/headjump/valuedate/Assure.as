@@ -2,10 +2,11 @@ package de.headjump.valuedate {
 	import de.headjump.tests.TestValuedate;
 	
 	public class Assure {
-		public static const VERSION:Number = 0.92;
+		public static const VERSION:Number = 0.93;
 		private var _func:Function;
 		private var _is_optional:Boolean;
 		private var _prepare_value:Function;
+		private static var MAIL_REGEXP:RegExp = /^[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
 		
 		public static function get value():Assure {
 			return new Assure();
@@ -217,6 +218,12 @@ package de.headjump.valuedate {
 				if (value is Array && (value as Array).length === 0) throw new Error("!NOTempty is empty array " + value);
 				if (value === "") throw new Error("!NOTempty is empty String " + value);
 				if (value is Number && isNaN(value)) throw new Error("!NOTempty is NaN number" + value);
+			});
+		}
+		
+		public function isEmail():Assure {
+			return check(function(email:String):void {
+				if (!email.match(MAIL_REGEXP)) throw new Error("!isEmail " + email);
 			});
 		}
 		

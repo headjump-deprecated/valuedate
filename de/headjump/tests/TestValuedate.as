@@ -106,6 +106,15 @@ package de.headjump.tests {
 			fails(Assure.value.assures(val), mother);
 		}
 		
+		public function testIsEmail():void {
+			validates(Assure.v.isEmail(), "info@dennistreder.de");
+			fails(Assure.v.isEmail(), "");
+			fails(Assure.v.isEmail(), undefined);
+			fails(Assure.v.isEmail(), 3);
+			fails(Assure.v.isEmail(), "@dennistreder.de");
+			fails(Assure.v.isEmail(), "s@dennistreder.d");
+		}
+		
 		public function testNested():void {
 			var admin:Object = {
 				name: "Mr. Admin",
