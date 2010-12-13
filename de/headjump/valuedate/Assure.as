@@ -2,15 +2,69 @@ package de.headjump.valuedate {
 	import de.headjump.tests.TestValuedate;
 	
 	public class Assure {
-		public static const VERSION:Number = 0.93;
+		public static const VERSION:Number = 0.95;
 		private var _func:Function;
 		private var _is_optional:Boolean;
 		private var _prepare_value:Function;
 		private static var MAIL_REGEXP:RegExp = /^[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
-		
+    private static var _trace:Function = null;
+    private static var _do_trace:Boolean = false;
+    private static var _error_trace:String;
+    private static var _trace_prefix:String = "";
+
+    public static function set trace_function(val:Function):void {
+      _trace = val;
+    }
+
 		public static function get value():Assure {
 			return new Assure();
-		}		
+		}
+
+    private static function traceDown():void {
+      if(!_do_trace) return;
+      _trace_prefix += "  ";
+    }
+    private static function traceUp():void {
+      if(!_do_trace) return;
+      _trace_prefix.substr(0, _trace_prefix.length - 2);
+    }
+
+    /**
+     * Traces output, if _do_trace
+     */
+    private static function tr(what:*):void {
+      if(_do_trace) {
+        _error_trace += (_error_trace === "" ? "" : "\n") + _trace_prefix + what;
+      }
+    }
+
+    /**
+     * validates assure and shows trace if !valid
+     * @param a           Assure
+     * @param values      Values to validate for
+     * @return            valid?
+     */
+    public static function withErrorTrace(a:Assure, ...values):Boolean {
+      var res:Boolean;
+
+      _do_trace = true;
+      _error_trace = "";
+      _trace_prefix = "";
+
+      res = a.validate.apply(null, values);
+
+      if(!res) {
+        if(_trace !== null) {
+          _trace.apply(null, [ "ASSURE !valid:\n" + _error_trace ]);
+        } else {
+          trace("ASSURE !valid:\n" + _error_trace);
+        }
+      }
+
+      _do_trace = false;
+      return res;
+    }
+
 		// alias
 		public static function get v():Assure { return value; }
 		
@@ -56,9 +110,12 @@ package de.headjump.valuedate {
 		
 		public function forEach(a:Assure):Assure {
 			return check(function(value:*):void {
+        tr("for each:");
+        traceDown();
 				for each (var c:* in value) {
 					if (!a.validate(c)) throw new Error("!forEach " + [value, c, a]);
 				}
+        traceUp();
 			});
 		}
 		
@@ -83,9 +140,15 @@ package de.headjump.valuedate {
 		
 		public function oneOf(... assures):Assure {
 			return check(function(value:*):void {
+        tr("one of:");
+        traceDown();
 				for each(var a:Assure in assures) {
-					if (a.validate(value)) return;
+					if (a.validate(value)) {
+            traceUp();
+            return;
+          }
 				}
+        traceUp();
 				throw new Error("!oneOf " + value + " - " + assures);
 			});
 		}
@@ -163,9 +226,13 @@ package de.headjump.valuedate {
 		
 		public function forProperties(schema:Object):Assure {
 			return check(function(value:*):void {
+        tr("for properties:");
+        traceDown();
 				for (var key:* in schema) {
+          tr("'" + key + "'");
 					if (!Assure(schema[key]).validate(value[key])) throw new Error("!schema " + [value, value[key], schema[key]]);
 				}
+        traceUp();
 			});
 		}
 		
@@ -175,6 +242,8 @@ package de.headjump.valuedate {
 		 * @param	assure		Assure to validate deep value with
 		 */public function deep(path_to_value:*, assure:Assure):Assure {
 			return check(function(value:*):void {
+        tr("deep '" + path_to_value + "'");
+        traceDown();
 				var v:*;
 				var arraycopy:Array = [];
 				var a:Array;
@@ -208,6 +277,7 @@ package de.headjump.valuedate {
 					}
 				}
 				if(!assure.validate(v)) throw Error("!deep assure for " + v);
+        traceUp();
 			});
 		}
 		
@@ -238,7 +308,7 @@ package de.headjump.valuedate {
 						_func.apply(null, [v]);
 					}
 				} catch (e:Error) {
-					trace(e.message);
+					tr("ERROR: " + e.message);
 					return false;
 				}
 			}
